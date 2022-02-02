@@ -1,3 +1,4 @@
+import "./vendor/webm-writer-0.2.0";
 import CCapture from "ccapture.js";
 
 export type CapturerSettings = {
