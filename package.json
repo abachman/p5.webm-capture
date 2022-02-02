@@ -1,0 +1,33 @@
+{
+  "name": "p5.webm-capture",
+  "version": "1.0.0",
+  "description": "A simple frame-by-frame capture utility for p5.js",
+  "main": "p5.webm-capture.min.js",
+  "scripts": {
+    "test": "jest",
+    "build": "node esbuild.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/abachman/p5.webm-capture.git"
+  },
+  "keywords": [
+    "p5.js",
+    "p5js",
+    "p5",
+    "processing.org"
+  ],
+  "author": "Adam Bachman <adam.bachman@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/abachman/p5.webm-capture/issues"
+  },
+  "homepage": "https://github.com/abachman/p5.webm-capture#readme",
+  "devDependencies": {
+    "esbuild": "^0.14.16",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "ccapture.js": "abachman/ccapture.js#5a69d51"
+  }
+}
