@@ -1,5 +1,12 @@
 import "./vendor/webm-writer-0.2.0";
-import CCapture from "ccapture.js";
+import "./vendor/download";
+import "./vendor/ccapture";
+
+declare global {
+  interface Window {
+    CCapture: any;
+  }
+}
 
 export type CapturerSettings = {
   frameCount: number;
@@ -26,7 +33,7 @@ export default class Capturer {
     this.el = element;
     this.maxFrames = frameCount;
     this.frames = 0;
-    this.capture = new CCapture({
+    this.capture = new window.CCapture({
       framerate: 60,
       format: "webm",
       verbose: false,

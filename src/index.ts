@@ -10,6 +10,6 @@ declare global {
 if (window) {
   // running in a browser, attach capturer to global window object
   const capturer = new Capturer();
-  window.enableCapture = capturer.enableCapture;
-  window.captureFrame = capturer.captureFrame;
+  window.enableCapture = capturer.enableCapture.bind(capturer);
+  window.captureFrame = capturer.captureFrame.bind(capturer);
 }
