@@ -1,4 +1,4 @@
-import Capturer, { CapturerSettings } from "./capturer";
+import Capturer, { CapturerSettings } from "./Capturer";
 
 declare global {
   interface Window {
