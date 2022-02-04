@@ -28,7 +28,7 @@ export default class Capturer {
     this.running = false;
   }
 
-  enableCapture(settings: CapturerSettings) {
+  enableCapture(settings: CapturerSettings = {}) {
     this.active = true;
     this.el = settings.element || document.querySelector("canvas");
     this.maxFrames = settings.frameCount || 600;
