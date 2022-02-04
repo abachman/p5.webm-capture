@@ -1,6 +1,4 @@
-import "./vendor/webm-writer-0.3.0";
-import "./vendor/download";
-import "./vendor/ccapture";
+import { CCapture } from "./vendor/ccapture-1.0.9";
 
 declare global {
   interface Window {
@@ -33,7 +31,7 @@ export default class Capturer {
     this.el = element;
     this.maxFrames = frameCount;
     this.frames = 0;
-    this.capture = new window.CCapture({
+    this.capture = CCapture({
       framerate: 60,
       format: "webm",
       verbose: false,
@@ -44,6 +42,7 @@ export default class Capturer {
   captureFrame() {
     if (this.active && !this.running) {
       this.capture.start();
+      this.running = true;
     }
 
     if (this.active) {

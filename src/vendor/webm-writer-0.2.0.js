@@ -1,16 +1,15 @@
 /**
  * A tool for presenting an ArrayBuffer as a stream for writing some simple data types.
- * 
+ *
  * By Nicholas Sherlock
  * https://github.com/thenickdude/webm-writer-js
- * 
+ *
  * Released under the WTFPLv2 https://en.wikipedia.org/wiki/WTFPL
  */
 
 "use strict";
 
 (function () {
-
   // var isNodeEnviroment = typeof module !== 'undefined' && typeof module.exports !== 'undefined';
   var isNodeEnviroment = false;
 
@@ -39,7 +38,8 @@
   };
 
   //Synonym:
-  ArrayBufferDataStream.prototype.writeU8 = ArrayBufferDataStream.prototype.writeByte;
+  ArrayBufferDataStream.prototype.writeU8 =
+    ArrayBufferDataStream.prototype.writeByte;
 
   ArrayBufferDataStream.prototype.writeU16BE = function (u) {
     this.data[this.pos++] = u >> 8;
@@ -47,8 +47,7 @@
   };
 
   ArrayBufferDataStream.prototype.writeDoubleBE = function (d) {
-    var
-      bytes = new Uint8Array(new Float64Array([d]).buffer);
+    var bytes = new Uint8Array(new Float64Array([d]).buffer);
 
     for (var i = bytes.length - 1; i >= 0; i--) {
       this.writeByte(bytes[i]);
@@ -56,8 +55,7 @@
   };
 
   ArrayBufferDataStream.prototype.writeFloatBE = function (d) {
-    var
-      bytes = new Uint8Array(new Float32Array([d]).buffer);
+    var bytes = new Uint8Array(new Float32Array([d]).buffer);
 
     for (var i = bytes.length - 1; i >= 0; i--) {
       this.writeByte(bytes[i]);
@@ -74,11 +72,11 @@
   };
 
   /**
-   * Write the given 32-bit integer to the stream as an EBML variable-length integer using the given byte width 
+   * Write the given 32-bit integer to the stream as an EBML variable-length integer using the given byte width
    * (use measureEBMLVarInt).
-   * 
+   *
    * No error checking is performed to ensure that the supplied width is correct for the integer.
-   * 
+   *
    * @param i Integer to be written
    * @param width Number of bytes to write to the stream
    */
@@ -103,8 +101,8 @@
         this.writeU8(i);
         break;
       case 5:
-        /* 
-         * JavaScript converts its doubles to 32-bit integers for bitwise operations, so we need to do a 
+        /*
+         * JavaScript converts its doubles to 32-bit integers for bitwise operations, so we need to do a
          * division by 2^32 instead of a right-shift of 32 to retain those top 3 bits
          */
         this.writeU8((1 << 3) | ((i / 4294967296) & 0x7));
@@ -133,7 +131,8 @@
       return 3;
     } else if (val < (1 << 28) - 1) {
       return 4;
-    } else if (val < 34359738367) { // 2 ^ 35 - 1 (can address 32GB)
+    } else if (val < 34359738367) {
+      // 2 ^ 35 - 1 (can address 32GB)
       return 5;
     } else {
       throw new RuntimeException("EBML VINT size not supported " + val);
@@ -147,9 +146,9 @@
   /**
    * Write the given unsigned 32-bit integer to the stream in big-endian order using the given byte width.
    * No error checking is performed to ensure that the supplied width is correct for the integer.
-   * 
+   *
    * Omit the width parameter to have it determined automatically for you.
-   * 
+   *
    * @param u Unsigned integer to be written
    * @param width Number of bytes to write to the stream
    */
@@ -181,11 +180,11 @@
    */
   ArrayBufferDataStream.prototype.measureUnsignedInt = function (val) {
     // Force to 32-bit unsigned integer
-    if (val < (1 << 8)) {
+    if (val < 1 << 8) {
       return 1;
-    } else if (val < (1 << 16)) {
+    } else if (val < 1 << 16) {
       return 2;
-    } else if (val < (1 << 24)) {
+    } else if (val < 1 << 24) {
       return 3;
     } else if (val < 4294967296) {
       return 4;
@@ -221,15 +220,17 @@
    * Released under the WTFPLv2 https://en.wikipedia.org/wiki/WTFPL
    */
 
-  var BlobBuffer = function (fs) {
+  var BlobBuffer = (function (fs) {
     return function (destination) {
-      var
-        buffer = [],
+      var buffer = [],
         writePromise = Promise.resolve(),
         fileWriter = null,
         fd = null;
 
-      if (typeof FileWriter !== "undefined" && destination instanceof FileWriter) {
+      if (
+        typeof FileWriter !== "undefined" &&
+        destination instanceof FileWriter
+      ) {
         fileWriter = destination;
       } else if (fs && destination) {
         fd = destination;
@@ -244,8 +245,7 @@
       // Returns a promise that converts the blob to an ArrayBuffer
       function readBlobAsBuffer(blob) {
         return new Promise(function (resolve, reject) {
-          var
-            reader = new FileReader();
+          var reader = new FileReader();
 
           reader.addEventListener("loadend", function () {
             resolve(reader.result);
@@ -259,24 +259,30 @@
         return new Promise(function (resolve, reject) {
           if (thing instanceof Uint8Array) {
             resolve(thing);
-          } else if (thing instanceof ArrayBuffer || ArrayBuffer.isView(thing)) {
+          } else if (
+            thing instanceof ArrayBuffer ||
+            ArrayBuffer.isView(thing)
+          ) {
             resolve(new Uint8Array(thing));
           } else if (thing instanceof Blob) {
-            resolve(readBlobAsBuffer(thing).then(function (buffer) {
-              return new Uint8Array(buffer);
-            }));
+            resolve(
+              readBlobAsBuffer(thing).then(function (buffer) {
+                return new Uint8Array(buffer);
+              })
+            );
           } else {
             //Assume that Blob will know how to read this thing
-            resolve(readBlobAsBuffer(new Blob([thing])).then(function (buffer) {
-              return new Uint8Array(buffer);
-            }));
+            resolve(
+              readBlobAsBuffer(new Blob([thing])).then(function (buffer) {
+                return new Uint8Array(buffer);
+              })
+            );
           }
         });
       }
 
       function measureData(data) {
-        var
-          result = data.byteLength || data.length || data.size;
+        var result = data.byteLength || data.length || data.size;
 
         if (!Number.isInteger(result)) {
           throw "Failed to determine size of element";
@@ -314,11 +320,10 @@
        * be fully contained by the extent of a previous write).
        */
       this.write = function (data) {
-        var
-          newEntry = {
+        var newEntry = {
             offset: this.pos,
             data: data,
-            length: measureData(data)
+            length: measureData(data),
           },
           isAppend = newEntry.offset >= this.length;
 
@@ -330,10 +335,8 @@
           if (fd) {
             return new Promise(function (resolve, reject) {
               convertToUint8Array(newEntry.data).then(function (dataArray) {
-                var
-                  totalWritten = 0,
+                var totalWritten = 0,
                   buffer = Buffer.from(dataArray.buffer),
-
                   handleWriteComplete = function (err, written, buffer) {
                     totalWritten += written;
 
@@ -341,11 +344,25 @@
                       resolve();
                     } else {
                       // We still have more to write...
-                      fs.write(fd, buffer, totalWritten, buffer.length - totalWritten, newEntry.offset + totalWritten, handleWriteComplete);
+                      fs.write(
+                        fd,
+                        buffer,
+                        totalWritten,
+                        buffer.length - totalWritten,
+                        newEntry.offset + totalWritten,
+                        handleWriteComplete
+                      );
                     }
                   };
 
-                fs.write(fd, buffer, 0, buffer.length, newEntry.offset, handleWriteComplete);
+                fs.write(
+                  fd,
+                  buffer,
+                  0,
+                  buffer.length,
+                  newEntry.offset,
+                  handleWriteComplete
+                );
               });
             });
           } else if (fileWriter) {
@@ -360,16 +377,27 @@
 
             // Slow linear search to find a block we might be overwriting
             for (var i = 0; i < buffer.length; i++) {
-              var
-                entry = buffer[i];
+              var entry = buffer[i];
 
               // If our new entry overlaps the old one in any way...
-              if (!(newEntry.offset + newEntry.length <= entry.offset || newEntry.offset >= entry.offset + entry.length)) {
-                if (newEntry.offset < entry.offset || newEntry.offset + newEntry.length > entry.offset + entry.length) {
+              if (
+                !(
+                  newEntry.offset + newEntry.length <= entry.offset ||
+                  newEntry.offset >= entry.offset + entry.length
+                )
+              ) {
+                if (
+                  newEntry.offset < entry.offset ||
+                  newEntry.offset + newEntry.length >
+                    entry.offset + entry.length
+                ) {
                   throw new Error("Overwrite crosses blob boundaries");
                 }
 
-                if (newEntry.offset == entry.offset && newEntry.length == entry.length) {
+                if (
+                  newEntry.offset == entry.offset &&
+                  newEntry.length == entry.length
+                ) {
                   // We overwrote the entire block
                   entry.data = newEntry.data;
 
@@ -381,10 +409,14 @@
                       entry.data = entryArray;
 
                       return convertToUint8Array(newEntry.data);
-                    }).then(function (newEntryArray) {
+                    })
+                    .then(function (newEntryArray) {
                       newEntry.data = newEntryArray;
 
-                      entry.data.set(newEntry.data, newEntry.offset - entry.offset);
+                      entry.data.set(
+                        newEntry.data,
+                        newEntry.offset - entry.offset
+                      );
                     });
                 }
               }
@@ -412,8 +444,7 @@
         } else {
           // After writes complete we need to merge the buffer to give to the caller
           writePromise = writePromise.then(function () {
-            var
-              result = [];
+            var result = [];
 
             for (var i = 0; i < buffer.length; i++) {
               result.push(buffer[i].data);
@@ -426,7 +457,7 @@
         return writePromise;
       };
     };
-  }(null);
+  })(null);
 
   window.BlobBuffer = BlobBuffer;
 
@@ -446,8 +477,7 @@
 
   var WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
     function extend(base, top) {
-      var
-        target = {};
+      var target = {};
 
       [base, top].forEach(function (obj) {
         for (var prop in obj) {
@@ -470,15 +500,14 @@
         return false;
       }
 
-      return window.atob(url.substring("data:image\/webp;base64,".length));
+      return window.atob(url.substring("data:image/webp;base64,".length));
     }
 
     /**
      * Convert a raw binary string (one character = one output byte) to an ArrayBuffer
      */
     function stringToArrayBuffer(string) {
-      var
-        buffer = new ArrayBuffer(string.length),
+      var buffer = new ArrayBuffer(string.length),
         int8Array = new Uint8Array(buffer);
 
       for (var i = 0; i < string.length; i++) {
@@ -492,23 +521,21 @@
      * Convert the given canvas to a WebP encoded image and return the image data as a string.
      */
     function renderAsWebP(canvas, quality) {
-      var
-        frame = canvas.toDataURL('image/webp', { quality: quality });
+      var frame = canvas.toDataURL("image/webp", { quality: quality });
 
       return decodeBase64WebPDataURL(frame);
     }
 
     function extractKeyframeFromWebP(webP) {
       // Assume that Chrome will generate a Simple Lossy WebP which has this header:
-      var
-        keyframeStartIndex = webP.indexOf('VP8 ');
+      var keyframeStartIndex = webP.indexOf("VP8 ");
 
       if (keyframeStartIndex == -1) {
         throw "Failed to identify beginning of keyframe in WebP image";
       }
 
       // Skip the header and the 4 bytes that encode the length of the VP8 chunk
-      keyframeStartIndex += 'VP8 '.length + 4;
+      keyframeStartIndex += "VP8 ".length + 4;
 
       return webP.substring(keyframeStartIndex);
     }
@@ -551,12 +578,11 @@
         if (Array.isArray(ebml.data)) {
           // Writing an array of child elements. We won't try to measure the size of the children up-front
 
-          var
-            sizePos, dataBegin, dataEnd;
+          var sizePos, dataBegin, dataEnd;
 
           if (ebml.size === -1) {
             // Write the reserved all-one-bits marker to note that the size of this element is unknown/unbounded
-            buffer.writeByte(0xFF);
+            buffer.writeByte(0xff);
           } else {
             sizePos = buffer.pos;
 
@@ -616,43 +642,44 @@
     }
 
     return function (options) {
-      var
-        MAX_CLUSTER_DURATION_MSEC = 5000,
+      var MAX_CLUSTER_DURATION_MSEC = 5000,
         DEFAULT_TRACK_NUMBER = 1,
-
         writtenHeader = false,
-        videoWidth, videoHeight,
-
+        videoWidth,
+        videoHeight,
         clusterFrameBuffer = [],
         clusterStartTime = 0,
         clusterDuration = 0,
-
         optionDefaults = {
-          quality: 0.95,       // WebM image quality from 0.0 (worst) to 1.0 (best)
-          fileWriter: null,    // Chrome FileWriter in order to stream to a file instead of buffering to memory (optional)
-          fd: null,            // Node.JS file descriptor to write to instead of buffering (optional)
+          quality: 0.95, // WebM image quality from 0.0 (worst) to 1.0 (best)
+          fileWriter: null, // Chrome FileWriter in order to stream to a file instead of buffering to memory (optional)
+          fd: null, // Node.JS file descriptor to write to instead of buffering (optional)
 
           // You must supply one of:
           frameDuration: null, // Duration of frames in milliseconds
-          frameRate: null,     // Number of frames per second
+          frameRate: null, // Number of frames per second
         },
-
         seekPoints = {
-          Cues: { id: new Uint8Array([0x1C, 0x53, 0xBB, 0x6B]), positionEBML: null },
-          SegmentInfo: { id: new Uint8Array([0x15, 0x49, 0xA9, 0x66]), positionEBML: null },
-          Tracks: { id: new Uint8Array([0x16, 0x54, 0xAE, 0x6B]), positionEBML: null },
+          Cues: {
+            id: new Uint8Array([0x1c, 0x53, 0xbb, 0x6b]),
+            positionEBML: null,
+          },
+          SegmentInfo: {
+            id: new Uint8Array([0x15, 0x49, 0xa9, 0x66]),
+            positionEBML: null,
+          },
+          Tracks: {
+            id: new Uint8Array([0x16, 0x54, 0xae, 0x6b]),
+            positionEBML: null,
+          },
         },
-
         ebmlSegment,
         segmentDuration = {
-          "id": 0x4489, // Duration
-          "data": new EBMLFloat64(0)
+          id: 0x4489, // Duration
+          data: new EBMLFloat64(0),
         },
-
         seekHead,
-
         cues = [],
-
         blobBuffer = new BlobBuffer(options.fileWriter || options.fd);
 
       function fileOffsetToSegmentRelative(fileOffset) {
@@ -666,33 +693,30 @@
        * to be overwritten later.
        */
       function createSeekHead() {
-        var
-          seekPositionEBMLTemplate = {
-            "id": 0x53AC, // SeekPosition
-            "size": 5, // Allows for 32GB video files
-            "data": 0 // We'll overwrite this when the file is complete
+        var seekPositionEBMLTemplate = {
+            id: 0x53ac, // SeekPosition
+            size: 5, // Allows for 32GB video files
+            data: 0, // We'll overwrite this when the file is complete
           },
-
           result = {
-            "id": 0x114D9B74, // SeekHead
-            "data": []
+            id: 0x114d9b74, // SeekHead
+            data: [],
           };
 
         for (var name in seekPoints) {
-          var
-            seekPoint = seekPoints[name];
+          var seekPoint = seekPoints[name];
 
           seekPoint.positionEBML = Object.create(seekPositionEBMLTemplate);
 
           result.data.push({
-            "id": 0x4DBB, // Seek
-            "data": [
+            id: 0x4dbb, // Seek
+            data: [
               {
-                "id": 0x53AB, // SeekID
-                "data": seekPoint.id
+                id: 0x53ab, // SeekID
+                data: seekPoint.id,
               },
-              seekPoint.positionEBML
-            ]
+              seekPoint.positionEBML,
+            ],
           });
         }
 
@@ -705,132 +729,128 @@
       function writeHeader() {
         seekHead = createSeekHead();
 
-        var
-          ebmlHeader = {
-            "id": 0x1a45dfa3, // EBML
-            "data": [
+        var ebmlHeader = {
+            id: 0x1a45dfa3, // EBML
+            data: [
               {
-                "id": 0x4286, // EBMLVersion
-                "data": 1
+                id: 0x4286, // EBMLVersion
+                data: 1,
               },
               {
-                "id": 0x42f7, // EBMLReadVersion
-                "data": 1
+                id: 0x42f7, // EBMLReadVersion
+                data: 1,
               },
               {
-                "id": 0x42f2, // EBMLMaxIDLength
-                "data": 4
+                id: 0x42f2, // EBMLMaxIDLength
+                data: 4,
               },
               {
-                "id": 0x42f3, // EBMLMaxSizeLength
-                "data": 8
+                id: 0x42f3, // EBMLMaxSizeLength
+                data: 8,
               },
               {
-                "id": 0x4282, // DocType
-                "data": "webm"
+                id: 0x4282, // DocType
+                data: "webm",
               },
               {
-                "id": 0x4287, // DocTypeVersion
-                "data": 2
+                id: 0x4287, // DocTypeVersion
+                data: 2,
               },
               {
-                "id": 0x4285, // DocTypeReadVersion
-                "data": 2
-              }
-            ]
+                id: 0x4285, // DocTypeReadVersion
+                data: 2,
+              },
+            ],
           },
-
           segmentInfo = {
-            "id": 0x1549a966, // Info
-            "data": [
+            id: 0x1549a966, // Info
+            data: [
               {
-                "id": 0x2ad7b1, // TimecodeScale
-                "data": 1e6 // Times will be in miliseconds (1e6 nanoseconds per step = 1ms)
+                id: 0x2ad7b1, // TimecodeScale
+                data: 1e6, // Times will be in miliseconds (1e6 nanoseconds per step = 1ms)
               },
               {
-                "id": 0x4d80, // MuxingApp
-                "data": "webm-writer-js",
+                id: 0x4d80, // MuxingApp
+                data: "webm-writer-js",
               },
               {
-                "id": 0x5741, // WritingApp
-                "data": "webm-writer-js"
+                id: 0x5741, // WritingApp
+                data: "webm-writer-js",
               },
-              segmentDuration // To be filled in later
-            ]
+              segmentDuration, // To be filled in later
+            ],
           },
-
           tracks = {
-            "id": 0x1654ae6b, // Tracks
-            "data": [
+            id: 0x1654ae6b, // Tracks
+            data: [
               {
-                "id": 0xae, // TrackEntry
-                "data": [
+                id: 0xae, // TrackEntry
+                data: [
                   {
-                    "id": 0xd7, // TrackNumber
-                    "data": DEFAULT_TRACK_NUMBER
+                    id: 0xd7, // TrackNumber
+                    data: DEFAULT_TRACK_NUMBER,
                   },
                   {
-                    "id": 0x73c5, // TrackUID
-                    "data": DEFAULT_TRACK_NUMBER
+                    id: 0x73c5, // TrackUID
+                    data: DEFAULT_TRACK_NUMBER,
                   },
                   {
-                    "id": 0x9c, // FlagLacing
-                    "data": 0
+                    id: 0x9c, // FlagLacing
+                    data: 0,
                   },
                   {
-                    "id": 0x22b59c, // Language
-                    "data": "und"
+                    id: 0x22b59c, // Language
+                    data: "und",
                   },
                   {
-                    "id": 0x86, // CodecID
-                    "data": "V_VP8"
+                    id: 0x86, // CodecID
+                    data: "V_VP8",
                   },
                   {
-                    "id": 0x258688, // CodecName
-                    "data": "VP8"
+                    id: 0x258688, // CodecName
+                    data: "VP8",
                   },
                   {
-                    "id": 0x83, // TrackType
-                    "data": 1
+                    id: 0x83, // TrackType
+                    data: 1,
                   },
                   {
-                    "id": 0xe0,  // Video
-                    "data": [
+                    id: 0xe0, // Video
+                    data: [
                       {
-                        "id": 0xb0, // PixelWidth
-                        "data": videoWidth
+                        id: 0xb0, // PixelWidth
+                        data: videoWidth,
                       },
                       {
-                        "id": 0xba, // PixelHeight
-                        "data": videoHeight
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+                        id: 0xba, // PixelHeight
+                        data: videoHeight,
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
           };
 
         ebmlSegment = {
-          "id": 0x18538067, // Segment
-          "size": -1, // Unbounded size
-          "data": [
-            seekHead,
-            segmentInfo,
-            tracks,
-          ]
+          id: 0x18538067, // Segment
+          size: -1, // Unbounded size
+          data: [seekHead, segmentInfo, tracks],
         };
 
-        var
-          bufferStream = new ArrayBufferDataStream(256);
+        var bufferStream = new ArrayBufferDataStream(256);
 
         writeEBML(bufferStream, blobBuffer.pos, [ebmlHeader, ebmlSegment]);
         blobBuffer.write(bufferStream.getAsDataArray());
 
         // Now we know where these top-level elements lie in the file:
-        seekPoints.SegmentInfo.positionEBML.data = fileOffsetToSegmentRelative(segmentInfo.offset);
-        seekPoints.Tracks.positionEBML.data = fileOffsetToSegmentRelative(tracks.offset);
-      };
+        seekPoints.SegmentInfo.positionEBML.data = fileOffsetToSegmentRelative(
+          segmentInfo.offset
+        );
+        seekPoints.Tracks.positionEBML.data = fileOffsetToSegmentRelative(
+          tracks.offset
+        );
+      }
 
       /**
        * Create a SimpleBlock keyframe header using these fields:
@@ -841,8 +861,7 @@
        * Returns an EBML element.
        */
       function createKeyframeBlock(keyframe) {
-        var
-          bufferStream = new ArrayBufferDataStream(1 + 2 + 1);
+        var bufferStream = new ArrayBufferDataStream(1 + 2 + 1);
 
         if (!(keyframe.trackNumber > 0 && keyframe.trackNumber < 127)) {
           throw "TrackNumber must be > 0 and < 127";
@@ -857,11 +876,8 @@
         );
 
         return {
-          "id": 0xA3, // SimpleBlock
-          "data": [
-            bufferStream.getAsDataArray(),
-            keyframe.frame
-          ]
+          id: 0xa3, // SimpleBlock
+          data: [bufferStream.getAsDataArray(), keyframe.frame],
         };
       }
 
@@ -874,38 +890,38 @@
        */
       function createCluster(cluster) {
         return {
-          "id": 0x1f43b675,
-          "data": [
+          id: 0x1f43b675,
+          data: [
             {
-              "id": 0xe7, // Timecode
-              "data": Math.round(cluster.timecode)
-            }
-          ]
+              id: 0xe7, // Timecode
+              data: Math.round(cluster.timecode),
+            },
+          ],
         };
       }
 
       function addCuePoint(trackIndex, clusterTime, clusterFileOffset) {
         cues.push({
-          "id": 0xBB, // Cue
-          "data": [
+          id: 0xbb, // Cue
+          data: [
             {
-              "id": 0xB3, // CueTime
-              "data": clusterTime
+              id: 0xb3, // CueTime
+              data: clusterTime,
             },
             {
-              "id": 0xB7, // CueTrackPositions
-              "data": [
+              id: 0xb7, // CueTrackPositions
+              data: [
                 {
-                  "id": 0xF7, // CueTrack
-                  "data": trackIndex
+                  id: 0xf7, // CueTrack
+                  data: trackIndex,
                 },
                 {
-                  "id": 0xF1, // CueClusterPosition
-                  "data": fileOffsetToSegmentRelative(clusterFileOffset)
-                }
-              ]
-            }
-          ]
+                  id: 0xf1, // CueClusterPosition
+                  data: fileOffsetToSegmentRelative(clusterFileOffset),
+                },
+              ],
+            },
+          ],
         });
       }
 
@@ -914,19 +930,19 @@
        * The seek entry for the Cues in the SeekHead is updated.
        */
       function writeCues() {
-        var
-          ebml = {
-            "id": 0x1C53BB6B,
-            "data": cues
+        var ebml = {
+            id: 0x1c53bb6b,
+            data: cues,
           },
-
           cuesBuffer = new ArrayBufferDataStream(16 + cues.length * 32); // Pretty crude estimate of the buffer size we'll need
 
         writeEBML(cuesBuffer, blobBuffer.pos, ebml);
         blobBuffer.write(cuesBuffer.getAsDataArray());
 
         // Now we know where the Cues element has ended up, we can update the SeekHead
-        seekPoints.Cues.positionEBML.data = fileOffsetToSegmentRelative(ebml.offset);
+        seekPoints.Cues.positionEBML.data = fileOffsetToSegmentRelative(
+          ebml.offset
+        );
       }
 
       /**
@@ -938,16 +954,15 @@
         }
 
         // First work out how large of a buffer we need to hold the cluster data
-        var
-          rawImageSize = 0;
+        var rawImageSize = 0;
 
         for (var i = 0; i < clusterFrameBuffer.length; i++) {
           rawImageSize += clusterFrameBuffer[i].frame.length;
         }
 
-        var
-          buffer = new ArrayBufferDataStream(rawImageSize + clusterFrameBuffer.length * 32), // Estimate 32 bytes per SimpleBlock header
-
+        var buffer = new ArrayBufferDataStream(
+            rawImageSize + clusterFrameBuffer.length * 32
+          ), // Estimate 32 bytes per SimpleBlock header
           cluster = createCluster({
             timecode: Math.round(clusterStartTime),
           });
@@ -959,7 +974,11 @@
         writeEBML(buffer, blobBuffer.pos, cluster);
         blobBuffer.write(buffer.getAsDataArray());
 
-        addCuePoint(DEFAULT_TRACK_NUMBER, Math.round(clusterStartTime), cluster.offset);
+        addCuePoint(
+          DEFAULT_TRACK_NUMBER,
+          Math.round(clusterStartTime),
+          cluster.offset
+        );
 
         clusterFrameBuffer = [];
         clusterStartTime += clusterDuration;
@@ -998,8 +1017,7 @@
        * Call once writing is complete (so the offset of all top level elements is known).
        */
       function rewriteSeekHead() {
-        var
-          seekHeadBuffer = new ArrayBufferDataStream(seekHead.size),
+        var seekHeadBuffer = new ArrayBufferDataStream(seekHead.size),
           oldPos = blobBuffer.pos;
 
         // Write the rewritten SeekHead element's data payload to the stream (don't need to update the id or size)
@@ -1016,8 +1034,7 @@
        * Rewrite the Duration field of the Segment with the newly-discovered video duration.
        */
       function rewriteDuration() {
-        var
-          buffer = new ArrayBufferDataStream(8),
+        var buffer = new ArrayBufferDataStream(8),
           oldPos = blobBuffer.pos;
 
         // Rewrite the data payload (don't need to update the id or size)
@@ -1046,8 +1063,7 @@
           writtenHeader = true;
         }
 
-        var
-          webP = renderAsWebP(canvas, { quality: options.quality });
+        var webP = renderAsWebP(canvas, { quality: options.quality });
 
         if (!webP) {
           throw "Couldn't decode WebP frame, does the browser support WebP?";
@@ -1055,7 +1071,7 @@
 
         addFrameToCluster({
           frame: extractKeyframeFromWebP(webP),
-          duration: options.frameDuration
+          duration: options.frameDuration,
         });
       };
 
@@ -1072,7 +1088,7 @@
         rewriteSeekHead();
         rewriteDuration();
 
-        return blobBuffer.complete('video/webm');
+        return blobBuffer.complete("video/webm");
       };
 
       this.getWrittenSize = function () {
