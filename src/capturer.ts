@@ -1,4 +1,4 @@
-import "./vendor/webm-writer-0.2.0";
+import "./vendor/webm-writer-0.3.0";
 import "./vendor/download";
 import "./vendor/ccapture";
 

@@ -231,9 +231,9 @@ THE SOFTWARE.
   // }
 
   /*
-  
+
     WebM Encoder
-  
+
   */
 
   function CCWebMEncoder(settings) {
@@ -306,58 +306,58 @@ THE SOFTWARE.
 
   }
 
-  function CCFFMpegServerEncoder(settings) {
+  // function CCFFMpegServerEncoder(settings) {
 
-    CCFrameEncoder.call(this, settings);
+  //   CCFrameEncoder.call(this, settings);
 
-    settings.quality = (settings.quality / 100) || .8;
+  //   settings.quality = (settings.quality / 100) || .8;
 
-    this.encoder = new FFMpegServer.Video(settings);
-    this.encoder.on('process', function () {
-      this.emit('process')
-    }.bind(this));
-    this.encoder.on('finished', function (url, size) {
-      var cb = this.callback;
-      if (cb) {
-        this.callback = undefined;
-        cb(url, size);
-      }
-    }.bind(this));
-    this.encoder.on('progress', function (progress) {
-      if (this.settings.onProgress) {
-        this.settings.onProgress(progress)
-      }
-    }.bind(this));
-    this.encoder.on('error', function (data) {
-      alert(JSON.stringify(data, null, 2));
-    }.bind(this));
+  //   this.encoder = new FFMpegServer.Video(settings);
+  //   this.encoder.on('process', function () {
+  //     this.emit('process')
+  //   }.bind(this));
+  //   this.encoder.on('finished', function (url, size) {
+  //     var cb = this.callback;
+  //     if (cb) {
+  //       this.callback = undefined;
+  //       cb(url, size);
+  //     }
+  //   }.bind(this));
+  //   this.encoder.on('progress', function (progress) {
+  //     if (this.settings.onProgress) {
+  //       this.settings.onProgress(progress)
+  //     }
+  //   }.bind(this));
+  //   this.encoder.on('error', function (data) {
+  //     alert(JSON.stringify(data, null, 2));
+  //   }.bind(this));
 
-  }
+  // }
 
-  CCFFMpegServerEncoder.prototype = Object.create(CCFrameEncoder.prototype);
+  // CCFFMpegServerEncoder.prototype = Object.create(CCFrameEncoder.prototype);
 
-  CCFFMpegServerEncoder.prototype.start = function () {
+  // CCFFMpegServerEncoder.prototype.start = function () {
 
-    this.encoder.start(this.settings);
+  //   this.encoder.start(this.settings);
 
-  };
+  // };
 
-  CCFFMpegServerEncoder.prototype.add = function (canvas) {
+  // CCFFMpegServerEncoder.prototype.add = function (canvas) {
 
-    this.encoder.add(canvas);
+  //   this.encoder.add(canvas);
 
-  }
+  // }
 
-  CCFFMpegServerEncoder.prototype.save = function (callback) {
+  // CCFFMpegServerEncoder.prototype.save = function (callback) {
 
-    this.callback = callback;
-    this.encoder.end();
+  //   this.callback = callback;
+  //   this.encoder.end();
 
-  }
+  // }
 
-  CCFFMpegServerEncoder.prototype.safeToProceed = function () {
-    return this.encoder.safeToProceed();
-  };
+  // CCFFMpegServerEncoder.prototype.safeToProceed = function () {
+  //   return this.encoder.safeToProceed();
+  // };
 
   /*
     HTMLCanvasElement.captureStream()
@@ -408,65 +408,65 @@ THE SOFTWARE.
   }
 
   /*function CCGIFEncoder( settings ) {
-  
+
     CCFrameEncoder.call( this );
-  
+
     settings.quality = settings.quality || 6;
     this.settings = settings;
-  
+
     this.encoder = new GIFEncoder();
     this.encoder.setRepeat( 1 );
       this.encoder.setDelay( settings.step );
       this.encoder.setQuality( 6 );
       this.encoder.setTransparent( null );
       this.encoder.setSize( 150, 150 );
-  
+
       this.canvas = document.createElement( 'canvas' );
       this.ctx = this.canvas.getContext( '2d' );
-  
+
   }
-  
+
   CCGIFEncoder.prototype = Object.create( CCFrameEncoder );
-  
+
   CCGIFEncoder.prototype.start = function() {
-  
+
     this.encoder.start();
-  
+
   }
-  
+
   CCGIFEncoder.prototype.add = function( canvas ) {
-  
+
     this.canvas.width = canvas.width;
     this.canvas.height = canvas.height;
     this.ctx.drawImage( canvas, 0, 0 );
     this.encoder.addFrame( this.ctx );
-  
+
     this.encoder.setSize( canvas.width, canvas.height );
     var readBuffer = new Uint8Array(canvas.width * canvas.height * 4);
     var context = canvas.getContext( 'webgl' );
     context.readPixels(0, 0, canvas.width, canvas.height, context.RGBA, context.UNSIGNED_BYTE, readBuffer);
     this.encoder.addFrame( readBuffer, true );
-  
+
   }
-  
+
   CCGIFEncoder.prototype.stop = function() {
-  
+
     this.encoder.finish();
-  
+
   }
-  
+
   CCGIFEncoder.prototype.save = function( callback ) {
-  
+
     var binary_gif = this.encoder.stream().getData();
-  
+
     var data_url = 'data:image/gif;base64,'+encode64(binary_gif);
     window.location = data_url;
     return;
-  
+
     var blob = new Blob( [ binary_gif ], { type: "octet/stream" } );
     var url = window.URL.createObjectURL( blob );
     callback( url );
-  
+
   }*/
 
   function CCGIFEncoder(settings) {
