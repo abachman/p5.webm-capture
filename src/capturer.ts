@@ -56,6 +56,7 @@ export default class Capturer {
         this.capture.stop();
         this.capture.save();
         this.onComplete();
+        this.active = false;
       }
     }
   }
