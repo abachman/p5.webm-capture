@@ -1,10 +1,63 @@
 # p5js webm capture
 
-combination of cc-capture and webmwriter, handy for capturing frames of sketches and producing webm video output.
+combination of cc-capture and webm-writer, handy for capturing frames of sketches and producing webm video output. different from other p5.recording libraries because it doesn't capture a video stream of the canvas, it captures frames individually and rebuilds them into a webm video file, so you can produce a smooth final product even if your sketch is running on a slow computer.
 
-Works great with p5.js and Chrome. I wrote this so I could include it on https://editor.p5js.org sketches via CDN.
+designed to work with p5.js and Chrome. I wrote this so I could include it on https://editor.p5js.org sketches via CDN.
+
+## Usage
+
+p5.webm-writer provides two functions: `enableCapture` and `captureFrame`.
+
+### enableCapture
+
+```js
+enableCapture(options = {})
+```
+
+Prepares the webm-capture library to start grabbing frames. Call this in your `setup` function.
+
+Options (defaults shown in square brackets):
+- `element` {HTMLCanvasElement} [querySelector('canvas')] the `<canvas>` tag p5.js is drawing to. If you're using https://editor.p5js.org, it's usually `document.getElementById("defaultCanvas0")`.
+- `frameCount` {Integer} [600] the total number of frames to capture
+- `frameRate` {Integer} [60] sets the frames-per-second of the final video. *NOTE:* this doesn't have to be the frameRate of the normally running p5.js sketch.
+- `display` {boolean} [false] shows a HUD style timecode view
+- `onComplete` {Function} [() => void] a function that's called when capture is complete
+
+### captureFrame
+
+```
+captureFrame()
+```
+
+Must be called once per frame to capture the current sketch animation frame. Call this at the end of your `draw` function.
+
+After the first time this function is called, ccapture.js takes over all animation timing functions, so the sketch rendering will get jerky, but the recording should be smooth.
+
+Once the requested number of frames have been recorded, the .webm video will automatically download.
+
+## Example
+
+```js
+let c = 0;
+
+function setup() {
+  createCanvas(400, 400);
+  colorMode(HSB);
+  enableCapture({
+    frameCount: 360,
+    onComplete: function () { noLoop() }
+  });
+}
+
+function draw() {
+  background(c, 100, 100);
+  c = (c + 1) % 360
+  captureFrame();
+}
+```
 
 ## included libraries
+
 
 I have heartily abused the following libraries to make them play nicely with esbuild:
 

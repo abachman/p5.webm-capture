@@ -736,8 +736,6 @@ export class WebMWriter {
         cluster.offset
       );
 
-      console.log("flushClusterFrameBuffer");
-
       clusterFrameBuffer = [];
       clusterStartTime += clusterDuration;
       clusterDuration = 0;
