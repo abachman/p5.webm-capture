@@ -1,8 +1,42 @@
 # p5js webm capture
 
+[![npm version](https://badge.fury.io/js/p5.webm-capture.svg)](https://badge.fury.io/js/p5.webm-capture)
+
 combination of cc-capture and webm-writer, handy for capturing frames of sketches and producing webm video output. different from other p5.recording libraries because it doesn't capture a video stream of the canvas, it captures frames individually and rebuilds them into a webm video file, so you can produce a smooth final product even if your sketch is running on a slow computer.
 
 designed to work with p5.js and Chrome. I wrote this so I could include it on https://editor.p5js.org sketches via CDN.
+
+It is currently available at: https://unpkg.com/p5.webm-capture@1.0.1/dist/p5.webm-capture.js
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://unpkg.com/p5.webm-capture@1.0.1/dist/p5.webm-capture.js"></script>
+    <meta charset="utf-8" />
+  </head>
+  <body>
+    <script>
+      let c = 0;
+
+      function setup() {
+        createCanvas(400, 400);
+        colorMode(HSB);
+        enableCapture({
+          frameCount: 360
+        });
+      }
+
+      function draw() {
+        background(c, 100, 100);
+        c = (c + 1) % 360
+        captureFrame();
+      }
+    </script>
+  </body>
+</html>
+```
 
 ## Usage
 
