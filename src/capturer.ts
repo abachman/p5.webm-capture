@@ -7,9 +7,11 @@ declare global {
 }
 
 export type CapturerSettings = {
-  frameCount: number;
-  element: HTMLCanvasElement;
-  onComplete?: Function;
+  element: HTMLCanvasElement; // <canvas> element to capture
+  frameCount: number; // total number of frames to capture
+  display?: boolean; // show CCapture HUD
+  frameRate?: number; // defaults to 60
+  onComplete?: Function; // callback on recording completion
 };
 
 export default class Capturer {
@@ -26,17 +28,18 @@ export default class Capturer {
     this.running = false;
   }
 
-  enableCapture({ frameCount, element, onComplete }: CapturerSettings) {
+  enableCapture(settings: CapturerSettings) {
     this.active = true;
-    this.el = element;
-    this.maxFrames = frameCount;
+    this.el = settings.element;
+    this.maxFrames = settings.frameCount;
     this.frames = 0;
     this.capture = CCapture({
-      framerate: 60,
-      format: "webm",
+      framerate: settings.frameRate || 60,
+      format: "webm", // required
       verbose: false,
+      display: !!settings.display,
     });
-    this.onComplete = onComplete || function () {};
+    this.onComplete = settings.onComplete || function () {};
   }
 
   captureFrame() {
@@ -49,7 +52,7 @@ export default class Capturer {
       this.capture.capture(this.el);
       this.frames++;
 
-      if (this.frames > this.maxFrames) {
+      if (this.frames >= this.maxFrames) {
         this.capture.stop();
         this.capture.save();
         this.onComplete();

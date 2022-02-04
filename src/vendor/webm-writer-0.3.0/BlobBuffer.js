@@ -9,8 +9,11 @@
  *
  * Released under the WTFPLv2 https://en.wikipedia.org/wiki/WTFPL
  */
-const BlobBuffer = function (fs) {
-  return function (destination) {
+
+const fs = null;
+
+class BlobBuffer {
+  constructor(destination) {
     let buffer = [],
       writePromise = Promise.resolve(),
       fileWriter = null,
@@ -157,7 +160,6 @@ const BlobBuffer = function (fs) {
           });
         } else if (!isAppend) {
           // We might be modifying a write that was already buffered in memory.
-
           // Slow linear search to find a block we might be overwriting
           for (let i = 0; i < buffer.length; i++) {
             let entry = buffer[i];
@@ -238,7 +240,7 @@ const BlobBuffer = function (fs) {
 
       return writePromise;
     };
-  };
-};
+  }
+}
 
 export { BlobBuffer }

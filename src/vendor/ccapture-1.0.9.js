@@ -24,33 +24,7 @@ THE SOFTWARE.
 */
 
 import { download } from "./download-4.21";
-import { createWebMWriter } from "./webm-writer-0.3.0";
-
-const WebMWriter = createWebMWriter();
-
-// @license http://opensource.org/licenses/MIT
-// copyright Paul Irish 2015
-
-// Date.now() is supported everywhere except IE8. For IE8 we use the Date.now polyfill
-//   github.com/Financial-Times/polyfill-service/blob/master/polyfills/Date.now/polyfill.js
-// as Safari 6 doesn't have support for NavigationTiming, we use a Date.now() timestamp for relative values
-
-// if you want values similar to what you'd get with real perf.now, place this towards the head of the page
-// but in reality, you're just getting the delta between now() calls, so it's not terribly important where it's placed
-
-(function () {
-  if ("performance" in window == false) {
-    window.performance = {};
-  }
-
-  if ("now" in window.performance == false) {
-    let nowOffset = Date.now();
-
-    window.performance.now = function now() {
-      return Date.now() - nowOffset;
-    };
-  }
-})();
+import { WebMWriter } from "./webm-writer-0.3.0";
 
 function pad(n) {
   return String("0000000" + n).slice(-7);
@@ -277,12 +251,6 @@ CCGIFEncoder.prototype.add = function (canvas) {
 
   this.encoder.addFrame(this.ctx, { copy: true, delay: this.settings.step });
   this.step();
-
-  /*this.encoder.setSize( canvas.width, canvas.height );
-  let readBuffer = new Uint8Array(canvas.width * canvas.height * 4);
-  let context = canvas.getContext( 'webgl' );
-  context.readPixels(0, 0, canvas.width, canvas.height, context.RGBA, context.UNSIGNED_BYTE, readBuffer);
-  this.encoder.addFrame( readBuffer, true );*/
 };
 
 CCGIFEncoder.prototype.save = function (callback) {
@@ -298,7 +266,7 @@ function CCapture(settings) {
     _startTime,
     _performanceTime,
     _performanceStartTime,
-    _step,
+    // _step,
     _encoder,
     _timeouts = [],
     _intervals = [],
@@ -346,12 +314,6 @@ function CCapture(settings) {
       Object.keys(_encoders).join(", ")
     );
   }
-
-  _encoder = new ctor(_settings);
-  _encoder.step = _step;
-
-  _encoder.on("process", _process);
-  _encoder.on("progress", _progress);
 
   if ("performance" in window == false) {
     window.performance = {};
@@ -483,6 +445,11 @@ function CCapture(settings) {
   function _step() {
     _call(_process);
   }
+
+  _encoder = new ctor(_settings);
+  _encoder.step = _step;
+  _encoder.on("process", _process);
+  _encoder.on("progress", _progress);
 
   function _destroy() {
     _log("Capturer stop");
@@ -622,7 +589,6 @@ function CCapture(settings) {
     for (let j = 0; j < _timeouts.length; j++) {
       if (_time >= _timeouts[j].triggerTime) {
         _call(_timeouts[j].callback);
-        //console.log( 'timeout!' );
         _timeouts.splice(j, 1);
         continue;
       }
@@ -632,7 +598,6 @@ function CCapture(settings) {
       if (_time >= _intervals[j].triggerTime) {
         _call(_intervals[j].callback);
         _intervals[j].triggerTime += _intervals[j].time;
-        //console.log( 'interval!' );
         continue;
       }
     }

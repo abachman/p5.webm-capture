@@ -1,13 +1,5 @@
-/**
- * A tool for presenting an ArrayBuffer as a stream for writing some simple data types.
- *
- * By Nicholas Sherlock
- *
- * Released under the WTFPLv2 https://en.wikipedia.org/wiki/WTFPL
- */
-
-import { ArrayBufferDataStream } from "./webm-writer/ArrayBufferDataStream";
-import { BlobBuffer } from "./webm-writer/BlobBuffer";
+import { ArrayBufferDataStream } from "./ArrayBufferDataStream";
+import { BlobBuffer } from "./BlobBuffer";
 
 /**
  * WebM video encoder for Google Chrome. This implementation is suitable for creating very large video files, because
@@ -23,7 +15,6 @@ import { BlobBuffer } from "./webm-writer/BlobBuffer";
  * Released under the WTFPLv2 https://en.wikipedia.org/wiki/WTFPL
  */
 
-// (function () {
 function extend(base, top) {
   let target = {};
 
@@ -252,16 +243,8 @@ function writeEBML(buffer, bufferFileOffset, ebml) {
  * @property {Number} timecode - Start time for the cluster
  */
 
-/**
- * @param ArrayBufferDataStream - Imported library
- * @param BlobBuffer - Imported library
- *
- * @returns WebMWriter
- *
- * @constructor
- */
-let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
-  return function (options) {
+export class WebMWriter {
+  constructor(options) {
     let MAX_CLUSTER_DURATION_MSEC = 5000,
       DEFAULT_TRACK_NUMBER = 1,
       writtenHeader = false,
@@ -287,17 +270,17 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
       clusterStartTime = 0,
       clusterDuration = 0,
       optionDefaults = {
-        quality: 0.95, // WebM image quality from 0.0 (worst) to 0.99999 (best), 1.00 (WebP lossless) is not supported
+        quality: 0.95,
 
-        transparent: false, // True if an alpha channel should be included in the video
-        alphaQuality: undefined, // Allows you to set the quality level of the alpha channel separately.
+        transparent: false,
+        alphaQuality: undefined,
+
         // If not specified this defaults to the same value as `quality`.
-
-        fileWriter: null, // Chrome FileWriter in order to stream to a file instead of buffering to memory (optional)
-        fd: null, // Node.JS file descriptor to write to instead of buffering (optional)
+        fileWriter: null,
+        fd: null,
 
         // You must supply one of:
-        frameDuration: null, // Duration of frames in milliseconds
+        frameDuration: null,
         frameRate: null, // Number of frames per second
       },
       seekPoints = {
@@ -316,7 +299,7 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
       },
       ebmlSegment, // Root element of the EBML document
       segmentDuration = {
-        id: 0x4489, // Duration
+        id: 0x4489,
         data: new EBMLFloat64(0),
       },
       seekHead,
@@ -389,12 +372,12 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
      */
     function createSeekHead() {
       let seekPositionEBMLTemplate = {
-          id: 0x53ac, // SeekPosition
-          size: 5, // Allows for 32GB video files
+          id: 0x53ac,
+          size: 5,
           data: 0, // We'll overwrite this when the file is complete
         },
         result = {
-          id: 0x114d9b74, // SeekHead
+          id: 0x114d9b74,
           data: [],
         };
 
@@ -404,10 +387,10 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
         seekPoint.positionEBML = Object.create(seekPositionEBMLTemplate);
 
         result.data.push({
-          id: 0x4dbb, // Seek
+          id: 0x4dbb,
           data: [
             {
-              id: 0x53ab, // SeekID
+              id: 0x53ab,
               data: seekPoint.id,
             },
             seekPoint.positionEBML,
@@ -425,51 +408,51 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
       seekHead = createSeekHead();
 
       let ebmlHeader = {
-          id: 0x1a45dfa3, // EBML
+          id: 0x1a45dfa3,
           data: [
             {
-              id: 0x4286, // EBMLVersion
+              id: 0x4286,
               data: 1,
             },
             {
-              id: 0x42f7, // EBMLReadVersion
+              id: 0x42f7,
               data: 1,
             },
             {
-              id: 0x42f2, // EBMLMaxIDLength
+              id: 0x42f2,
               data: 4,
             },
             {
-              id: 0x42f3, // EBMLMaxSizeLength
+              id: 0x42f3,
               data: 8,
             },
             {
-              id: 0x4282, // DocType
+              id: 0x4282,
               data: "webm",
             },
             {
-              id: 0x4287, // DocTypeVersion
+              id: 0x4287,
               data: 2,
             },
             {
-              id: 0x4285, // DocTypeReadVersion
+              id: 0x4285,
               data: 2,
             },
           ],
         },
         segmentInfo = {
-          id: 0x1549a966, // Info
+          id: 0x1549a966,
           data: [
             {
-              id: 0x2ad7b1, // TimecodeScale
+              id: 0x2ad7b1,
               data: 1e6, // Times will be in miliseconds (1e6 nanoseconds per step = 1ms)
             },
             {
-              id: 0x4d80, // MuxingApp
+              id: 0x4d80,
               data: "webm-writer-js",
             },
             {
-              id: 0x5741, // WritingApp
+              id: 0x5741,
               data: "webm-writer-js",
             },
             segmentDuration, // To be filled in later
@@ -477,58 +460,58 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
         },
         videoProperties = [
           {
-            id: 0xb0, // PixelWidth
+            id: 0xb0,
             data: videoWidth,
           },
           {
-            id: 0xba, // PixelHeight
+            id: 0xba,
             data: videoHeight,
           },
         ];
 
       if (options.transparent) {
         videoProperties.push({
-          id: 0x53c0, // AlphaMode
+          id: 0x53c0,
           data: 1,
         });
       }
 
       let tracks = {
-        id: 0x1654ae6b, // Tracks
+        id: 0x1654ae6b,
         data: [
           {
-            id: 0xae, // TrackEntry
+            id: 0xae,
             data: [
               {
-                id: 0xd7, // TrackNumber
+                id: 0xd7,
                 data: DEFAULT_TRACK_NUMBER,
               },
               {
-                id: 0x73c5, // TrackUID
+                id: 0x73c5,
                 data: DEFAULT_TRACK_NUMBER,
               },
               {
-                id: 0x9c, // FlagLacing
+                id: 0x9c,
                 data: 0,
               },
               {
-                id: 0x22b59c, // Language
+                id: 0x22b59c,
                 data: "und",
               },
               {
-                id: 0x86, // CodecID
+                id: 0x86,
                 data: "V_VP8",
               },
               {
-                id: 0x258688, // CodecName
+                id: 0x258688,
                 data: "VP8",
               },
               {
-                id: 0x83, // TrackType
+                id: 0x83,
                 data: 1,
               },
               {
-                id: 0xe0, // Video
+                id: 0xe0,
                 data: videoProperties,
               },
             ],
@@ -537,8 +520,8 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
       };
 
       ebmlSegment = {
-        id: 0x18538067, // Segment
-        size: -1, // Unbounded size
+        id: 0x18538067,
+        size: -1,
         data: [seekHead, segmentInfo, tracks],
       };
 
@@ -571,7 +554,6 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
         bufferStream = new ArrayBufferDataStream(1 + 2 + 1);
 
       // Create a Block to hold the image data:
-
       if (!(keyframe.trackNumber > 0 && keyframe.trackNumber < 127)) {
         throw new Error("TrackNumber must be > 0 and < 127");
       }
@@ -581,22 +563,22 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
       bufferStream.writeByte(0); // Flags byte
 
       block = {
-        id: 0xa1, // Block
+        id: 0xa1,
         data: [bufferStream.getAsDataArray(), keyframe.frame],
       };
 
       blockAdditions = {
-        id: 0x75a1, // BlockAdditions
+        id: 0x75a1,
         data: [
           {
-            id: 0xa6, // BlockMore
+            id: 0xa6,
             data: [
               {
-                id: 0xee, // BlockAddID
+                id: 0xee,
                 data: 1, // Means "BlockAdditional has a codec-defined meaning, pass it to the codec"
               },
               {
-                id: 0xa5, // BlockAdditional
+                id: 0xa5,
                 data: keyframe.alpha, // The actual alpha channel image
               },
             ],
@@ -605,7 +587,7 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
       };
 
       return {
-        id: 0xa0, // BlockGroup
+        id: 0xa0,
         data: [block, blockAdditions],
       };
     }
@@ -633,7 +615,7 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
       );
 
       return {
-        id: 0xa3, // SimpleBlock
+        id: 0xa3,
         data: [bufferStream.getAsDataArray(), keyframe.frame],
       };
     }
@@ -663,7 +645,7 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
         id: 0x1f43b675,
         data: [
           {
-            id: 0xe7, // Timecode
+            id: 0xe7,
             data: Math.round(cluster.timecode),
           },
         ],
@@ -672,21 +654,21 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
 
     function addCuePoint(trackIndex, clusterTime, clusterFileOffset) {
       cues.push({
-        id: 0xbb, // Cue
+        id: 0xbb,
         data: [
           {
-            id: 0xb3, // CueTime
+            id: 0xb3,
             data: clusterTime,
           },
           {
-            id: 0xb7, // CueTrackPositions
+            id: 0xb7,
             data: [
               {
-                id: 0xf7, // CueTrack
+                id: 0xf7,
                 data: trackIndex,
               },
               {
-                id: 0xf1, // CueClusterPosition
+                id: 0xf1,
                 data: fileOffsetToSegmentRelative(clusterFileOffset),
               },
             ],
@@ -929,10 +911,10 @@ let WebMWriter = function (ArrayBufferDataStream, BlobBuffer) {
 
     options = extend(optionDefaults, options || {});
     validateOptions();
-  };
-};
+  }
+}
 
-export const createWebMWriter = () => {
-  console.log("createWebMWriter");
-  return new WebMWriter(ArrayBufferDataStream, BlobBuffer(null));
-};
+// export { WebMWriter };
+// export const createWebMWriter = () => {
+//   return new WebMWriter(ArrayBufferDataStream, BlobBuffer);
+// };

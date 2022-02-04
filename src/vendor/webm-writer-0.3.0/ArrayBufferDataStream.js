@@ -1,3 +1,11 @@
+/**
+ * A tool for presenting an ArrayBuffer as a stream for writing some simple data types.
+ *
+ * By Nicholas Sherlock
+ *
+ * Released under the WTFPLv2 https://en.wikipedia.org/wiki/WTFPL
+ */
+
 /*
  * Create an ArrayBuffer of the given length and present it as a writable stream with methods
  * for writing data in different formats.
