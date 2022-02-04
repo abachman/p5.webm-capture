@@ -1,10 +1,13 @@
 {
   "name": "p5.webm-capture",
   "version": "1.0.0",
-  "description": "A frame-by-frame capture and webmvideo export utility for p5.js",
-  "main": "p5.webm-capture.min.js",
+  "description": "A frame-by-frame capture and webm video export utility for p5.js",
+  "browser": "dist/p5.webm-capture.js",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
-    "test": "jest",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "build": "node esbuild.js"
   },
   "repository": {
