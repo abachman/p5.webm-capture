@@ -6,7 +6,7 @@ combination of cc-capture and webm-writer, handy for capturing frames of sketche
 
 designed to work with p5.js and Chrome. I wrote this so I could include it on https://editor.p5js.org sketches via CDN.
 
-It is currently available at: https://unpkg.com/p5.webm-capture@1.0.1/dist/p5.webm-capture.js
+It is currently available at: https://unpkg.com/p5.webm-capture@1.1.0/dist/p5.webm-capture.js
 
 ```html
 <!DOCTYPE html>
@@ -24,14 +24,13 @@ It is currently available at: https://unpkg.com/p5.webm-capture@1.0.1/dist/p5.we
         createCanvas(400, 400);
         colorMode(HSB);
         enableCapture({
-          frameCount: 360
+          frameCount: 360,
         });
       }
 
       function draw() {
         background(c, 100, 100);
-        c = (c + 1) % 360
-        captureFrame();
+        c = (c + 1) % 360;
       }
     </script>
   </body>
@@ -40,58 +39,45 @@ It is currently available at: https://unpkg.com/p5.webm-capture@1.0.1/dist/p5.we
 
 ## Usage
 
-p5.webm-writer provides two functions: `enableCapture` and `captureFrame`.
+Include p5.webm-capture.js in your index.html page right anytime after your p5.js script tag. **p5.js must be loaded before p5.webm-writer**.
+
+p5.webm-writer only has one function you need to worry about: `enableCapture`. It should be called from your `setup()` function after `createCanvas`.
 
 ### enableCapture
 
+Should be called in sketch `setup()`, after `createCanvas`.
+
 ```js
-enableCapture(options = {})
+
 ```
 
 Prepares the webm-capture library to start grabbing frames. Call this in your `setup` function.
 
 Options (defaults shown in square brackets):
+
 - `element` {HTMLCanvasElement} [querySelector('canvas')] the `<canvas>` tag p5.js is drawing to. If you're using https://editor.p5js.org, it's usually `document.getElementById("defaultCanvas0")`.
 - `frameCount` {Integer} [600] the total number of frames to capture
-- `frameRate` {Integer} [60] sets the frames-per-second of the final video. *NOTE:* this doesn't have to be the frameRate of the normally running p5.js sketch.
+- `frameRate` {Integer} [60] sets the frames-per-second of the final video. _NOTE:_ this doesn't have to be the frameRate of the normally running p5.js sketch.
 - `display` {boolean} [false] shows a HUD style timecode view
-- `onComplete` {Function} [() => void] a function that's called when capture is complete
+- `onComplete` {Function} [function () {}] a function that is called when capture is complete. You could use this to stop the sketch or send a message to an external process.
 
-### captureFrame
-
-```
-captureFrame()
-```
-
-Must be called once per frame to capture the current sketch animation frame. Call this at the end of your `draw` function.
-
-After the first time this function is called, ccapture.js takes over all animation timing functions, so the sketch rendering will get jerky, but the recording should be smooth.
-
-Once the requested number of frames have been recorded, the .webm video will automatically download.
-
-## Example
+So a call with every option given would look like:
 
 ```js
-let c = 0;
-
-function setup() {
-  createCanvas(400, 400);
-  colorMode(HSB);
-  enableCapture({
-    frameCount: 360,
-    onComplete: function () { noLoop() }
-  });
-}
-
-function draw() {
-  background(c, 100, 100);
-  c = (c + 1) % 360
-  captureFrame();
-}
+enableCapture({
+  element: document.querySelector("canvas"),
+  frameCount: 120,
+  frameRate: 30,
+  display: true,
+  onComplete: function () {
+    alert("boop!");
+  },
+});
 ```
 
-## included libraries
+By default a 10 second video at 60fps will be captured.
 
+## included libraries
 
 I have heartily abused the following libraries to make them play nicely with esbuild:
 
@@ -100,3 +86,23 @@ I have heartily abused the following libraries to make them play nicely with esb
 - [webm-writer](https://github.com/thenickdude/webm-writer-js) is licensed under the WTFPLv2 https://en.wikipedia.org/wiki/WTFPL by [thenickdude](https://github.com/thenickdude)
 
 I stripped away everything not needed for running webm exports from Chrome.
+
+## hacking
+
+Make changes, then:
+
+```sh
+
+$ npm run build
+$ cd example
+$ ./serve
+$ open http://localhost:8000
+```
+
+## Changelog
+
+**1.1.0**: [uses p5.js library hooks](https://github.com/processing/p5.js/blob/fd5240a9/contributor_docs/creating_libraries.md#use-registermethod-to-register-functions-with-p5-that-should-be-called-at-various-times) so that `captureFrame()` is called after the draw() function automatically.
+
+**1.0.1**: functioning release (like 30 minutes after 1.0.0)
+
+**1.0.0**: initial release.

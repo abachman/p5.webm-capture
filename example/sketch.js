@@ -8,10 +8,10 @@ function gen(y) {
 function setup() {
   createCanvas(400, 400, WEBGL);
 
-  // \/-------------- p5.webm-capture
+  // \/-------------- p5.webm-capture global mode
   enableCapture({
-    frameCount: 60, // just one second of video
-    frameRate: 60, // at 60 fps
+    frameCount: 30, // just one second of video
+    frameRate: 30, // at 60 fps
     display: true, // with the little counter in the top left
     element: document.querySelector("canvas"), // pick the obvious canvas
     onComplete: function () {
@@ -59,6 +59,4 @@ function draw() {
 
   // take one off the end
   if (bubbles[0][1] > cy + height / 2 + 100) bubbles.shift();
-
-  captureFrame(); // <------ here look at this
 }
