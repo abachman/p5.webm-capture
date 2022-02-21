@@ -17,7 +17,7 @@ export type CapturerSettings = {
 export default class Capturer {
   running: boolean;
   active: boolean;
-  capture: CCapture;
+  capture: ReturnType<typeof CCapture>;
   maxFrames: number;
   frames: number;
   el: HTMLCanvasElement;
@@ -41,18 +41,23 @@ export default class Capturer {
     this.onComplete = settings.onComplete || function () {};
   }
 
-  captureFrame() {
+  // must be safe to call on every frame
+  startCapture() {
     if (this.active && !this.running) {
+      console.log("[webm-capture] started");
       this.capture.start();
       this.frames = 0;
       this.running = true;
     }
+  }
 
+  captureFrame() {
     if (this.active) {
       this.capture.capture(this.el);
       this.frames++;
 
       if (this.frames >= this.maxFrames) {
+        console.log("[webm-capture] finished");
         this.capture.stop();
         this.capture.save();
         this.onComplete();
