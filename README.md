@@ -13,7 +13,7 @@ It is currently available at: https://unpkg.com/p5.webm-capture@1.1.0/dist/p5.we
 <html lang="en">
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-    <script src="https://unpkg.com/p5.webm-capture@1.0.1/dist/p5.webm-capture.js"></script>
+    <script src="https://unpkg.com/p5.webm-capture@1.1.0/dist/p5.webm-capture.js"></script>
     <meta charset="utf-8" />
   </head>
   <body>
