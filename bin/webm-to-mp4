@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+set -u
+
+framerate=30
+
+while getopts ":f:" opt; do
+  case ${opt} in
+    f ) 
+      framerate=$OPTARG
+      ;;
+    \? ) 
+      echo "Usage: webm-to-mp4 [-f FRAME_RATE] filename.webm"
+      exit 0
+      ;;
+    : ) 
+      echo "Invalid option: -$OPTARG requires an argument" 1>&2
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND -1))
+
+FNAME="$1"
+FMP4="${FNAME%.webm}.mp4"
+
+ffmpeg -fflags +genpts -i ${FNAME} -r $framerate ${FMP4}
