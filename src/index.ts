@@ -15,14 +15,17 @@ if (window) {
   const enable = capturer.enableCapture.bind(capturer);
   const start = capturer.startCapture.bind(capturer);
   const capture = capturer.captureFrame.bind(capturer);
+  const stop = capturer.stopCapture.bind(capturer);
 
   if (window.p5) {
     const p5 = window.p5;
 
     p5.prototype.enableCapture = enable;
+    p5.prototype.stopCapture = stop;
 
     p5.prototype.registerMethod("init", () => {
       (this as any).enableCapture = enable;
+      (this as any).stopCapture = stop;
     });
 
     p5.prototype.registerMethod("pre", () => {

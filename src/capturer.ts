@@ -8,7 +8,7 @@ declare global {
 
 export type CapturerSettings = {
   element?: HTMLCanvasElement; // <canvas> element to capture
-  frameCount?: number; // total number of frames to capture
+  frameCount?: number; // total number of frames to capture, set to -1 for manual stopCapture()
   display?: boolean; // show CCapture HUD
   frameRate?: number; // defaults to 60
   onComplete?: Function; // callback on recording completion
@@ -22,16 +22,19 @@ export default class Capturer {
   frames: number;
   el: HTMLCanvasElement;
   onComplete: Function;
+  manualStop: boolean;
 
   constructor() {
     this.active = false;
     this.running = false;
+    this.manualStop = false;
   }
 
   enableCapture(settings: CapturerSettings = {}) {
     this.active = true;
     this.el = settings.element || document.querySelector("canvas");
     this.maxFrames = settings.frameCount || 600;
+    this.manualStop = settings.frameCount < 1;
     this.capture = CCapture({
       framerate: settings.frameRate || 60,
       format: "webm", // required
@@ -56,13 +59,17 @@ export default class Capturer {
       this.capture.capture(this.el);
       this.frames++;
 
-      if (this.frames >= this.maxFrames) {
-        console.log("[webm-capture] finished");
-        this.capture.stop();
-        this.capture.save();
-        this.onComplete();
-        this.active = false;
+      if (!this.manualStop && this.frames >= this.maxFrames) {
+        this.stopCapture();
       }
     }
+  }
+
+  stopCapture() {
+    console.log("[webm-capture] finished");
+    this.capture.stop();
+    this.capture.save();
+    this.active = false;
+    this.onComplete();
   }
 }
