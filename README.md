@@ -45,17 +45,19 @@ Include p5.webm-capture.js in your index.html page right anytime after your p5.j
 
 p5.webm-writer only has one function you need to worry about: `enableCapture`. It should be called from your `setup()` function after `createCanvas`.
 
-### enableCapture
+### `enableCapture`
 
 Should be called in sketch `setup()`, after `createCanvas`. Prepares the webm-capture library to start grabbing frames.
 
 Options (defaults shown in square brackets):
 
-- `element` {HTMLCanvasElement} [querySelector('canvas')] the `<canvas>` tag p5.js is drawing to. If you're using https://editor.p5js.org, it's usually `document.getElementById("defaultCanvas0")`.
-- `frameCount` {Integer} [600] the total number of frames to capture. If you give a value less than 1, the library will run in "manual stop" mode and you'll have to call `stopCapture` to finish.
-- `frameRate` {Integer} [60] sets the frames-per-second of the final video. _NOTE:_ this doesn't have to be the same as the frameRate of the p5.js sketch.
-- `display` {boolean} [false] shows a HUD style timecode view
-- `onComplete` {Function} [function () {}] a function that is called when capture is complete. You could use this to stop the sketch or send a message to an external process.
+| Name         | Default                            | Description                                                                                                                                                                     |
+| ------------ | ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `element`    | `document.querySelector('canvas')` | the `<canvas>` tag p5.js is drawing to. If you're using https://editor.p5js.org, it's usually `document.getElementById("defaultCanvas0")`, but you can leave it to the default. |
+| `frameCount` | `600`                              | the total number of frames to capture. If you give a value less than 1, the library will run in "manual stop" mode and you'll have to call `stopCapture` to finish.             |
+| `frameRate`  | `60`                               | sets the frames-per-second of the final video. _NOTE:_ this doesn't have to be the same as the frameRate of the p5.js sketch.                                                   |
+| `display`    | `false`                            | shows a HUD style timecode view                                                                                                                                                 |
+| `onComplete` | `function () {}`                   | a function that is called when capture is complete. You could use this to stop the sketch or send a message to an external process.                                             |
 
 So a call with every option given would look like:
 
@@ -73,7 +75,7 @@ enableCapture({
 
 By default, given no arguments, a 10 second video at 60fps will be captured and your sketch will continue running.
 
-### stopCapture
+### `stopCapture`
 
 This is an **optional** method that can be called anytime during recording to stop capturing frames, download the recorded video, and call `onComplete`.
 
@@ -94,7 +96,6 @@ I stripped away everything not needed for running webm exports from Chrome. You 
 Make changes, then:
 
 ```sh
-
 $ npm run build
 $ cd example
 $ ./serve
@@ -104,9 +105,9 @@ $ open http://localhost:8000
 Releasing a new version of the library:
 
 ```sh
-
 # commit all changes, then
 $ npm version [major|minor|patch]
+$ npm publish
 ```
 
 ## Changelog
