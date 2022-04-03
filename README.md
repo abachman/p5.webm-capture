@@ -47,13 +47,7 @@ p5.webm-writer only has one function you need to worry about: `enableCapture`. I
 
 ### enableCapture
 
-Should be called in sketch `setup()`, after `createCanvas`.
-
-```js
-
-```
-
-Prepares the webm-capture library to start grabbing frames. Call this in your `setup` function.
+Should be called in sketch `setup()`, after `createCanvas`. Prepares the webm-capture library to start grabbing frames.
 
 Options (defaults shown in square brackets):
 
@@ -77,7 +71,7 @@ enableCapture({
 });
 ```
 
-By default a 10 second video at 60fps will be captured.
+By default, given no arguments, a 10 second video at 60fps will be captured and your sketch will continue running.
 
 ### stopCapture
 
@@ -105,6 +99,14 @@ $ npm run build
 $ cd example
 $ ./serve
 $ open http://localhost:8000
+```
+
+Releasing a new version of the library:
+
+```sh
+
+# commit all changes, then
+$ npm version [major|minor|patch]
 ```
 
 ## Changelog
