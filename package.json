@@ -1,6 +1,6 @@
 {
   "name": "p5.webm-capture",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "A frame-by-frame capture and webm video export utility for p5.js",
   "browser": "dist/p5.webm-capture.js",
   "files": [
