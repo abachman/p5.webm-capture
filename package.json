@@ -1,13 +1,14 @@
 {
   "name": "p5.webm-capture",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "A frame-by-frame capture and webm video export utility for p5.js",
   "browser": "dist/p5.webm-capture.js",
   "files": [
     "dist/*"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run typecheck && npm run build",
+    "typecheck": "tsc --noEmit",
     "build": "node esbuild.js",
     "preversion": "",
     "version": "npm run build && git add -A dist",
@@ -29,8 +30,11 @@
     "url": "https://github.com/abachman/p5.webm-capture/issues"
   },
   "homepage": "https://github.com/abachman/p5.webm-capture#readme",
+  "dependencies": {
+    "ccapture.js": "^2.0.0"
+  },
   "devDependencies": {
-    "esbuild": "^0.14.16",
-    "typescript": "^4.5.5"
+    "esbuild": "^0.25.0",
+    "typescript": "^5.7.0"
   }
 }
