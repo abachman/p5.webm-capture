@@ -10,6 +10,7 @@
     "test": "npm run typecheck && npm run build",
     "typecheck": "tsc --noEmit",
     "build": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
     "preversion": "",
     "version": "npm run build && git add -A dist",
     "postversion": "git push && git push --tags && rm -rf build/temp"
