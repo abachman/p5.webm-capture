@@ -81,15 +81,9 @@ This is an **optional** method that can be called anytime during recording to st
 
 If you give a value less than 1 for `frameCount`, calling `stopCapture()` is required to stop recording and download. This is "manual stop" mode.
 
-## included libraries
+## dependencies
 
-I have heartily abused the following libraries to make them play nicely with esbuild:
-
-- [ccapture.js](https://github.com/spite/ccapture.js) is MIT Licensed by [Jaume Sanchez Elias](https://github.com/spite).
-- [download](https://github.com/rndme/download) is MIT Licensed by [dandavis](https://github.com/rndme).
-- [webm-writer](https://github.com/thenickdude/webm-writer-js) is licensed under the WTFPLv2 https://en.wikipedia.org/wiki/WTFPL by [thenickdude](https://github.com/thenickdude)
-
-I stripped away everything not needed for running webm exports from Chrome. You can find their source in the `src/vendor` folder.
+- [ccapture.js](https://github.com/spite/ccapture.js) (v2.0.0, MIT License) by [Jaume Sanchez Elias](https://github.com/spite), providing ESM, TypeScript types, and modern WebCodecs hardware-accelerated encoding with automatic fallback to WebM.
 
 ## hacking
 
@@ -111,6 +105,10 @@ $ npm publish
 ```
 
 ## Changelog
+
+**2.0.0**: Upgrade to `ccapture.js` 2.0.0 with pure ESM, native TypeScript types, hardware-accelerated WebCodecs encoding, and remove legacy vendored dependencies. `onComplete(blob)` now reliably waits for file generation and download completion, receiving the resulting `Blob`.
+
+**1.2.1**: package version update.
 
 **1.2.0**: expose the `stopCapture` method and allow passing a value less than 1 to `frameCount` to signal the intent to stop recording manually.
 
