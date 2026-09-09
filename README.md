@@ -106,7 +106,7 @@ $ npm publish
 
 ## Changelog
 
-**1.3.1**: Fixed race condition between CCapture `start()` and `capture()` in which the first frame could be captured before the library was ready to encode it, resulting in duplicate first frames and dropped last frames. Added e2e test covering this behavior.
+**1.3.2**: Fixed race condition between CCapture `start()` and `capture()` in which the first frame could be captured before the library was ready to encode it, resulting in duplicate first frames and dropped last frames. Added e2e test covering this behavior.
 
 **1.3.0**: Upgrade to `ccapture.js` 2.0.0 for more encodings out of the box and better cross-browser support.
 
