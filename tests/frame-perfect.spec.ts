@@ -3,7 +3,6 @@ import http from 'http';
 import fs from 'fs';
 import path from 'path';
 import { PNG } from 'pngjs';
-import pixelmatch from 'pixelmatch';
 import * as tar from 'tar';
 
 interface TarEntry {
@@ -110,6 +109,8 @@ test.describe('Frame-perfect capture verification', () => {
 
     // Expect exactly 5 frames captured
     expect(files.length).toBe(5);
+
+    const { default: pixelmatch } = await import('pixelmatch');
 
     // Validate each frame matches its expectation fixture exactly (0 mismatched pixels)
     for (let i = 0; i < files.length; i++) {
