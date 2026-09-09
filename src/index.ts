@@ -21,9 +21,6 @@ if (typeof window !== "undefined") {
   if (window.p5) {
     const p5 = window.p5;
 
-    // p5.prototype.enableCapture = enable;
-    // p5.prototype.stopCapture = stop;
-
     p5.prototype.registerMethod("init", function (this: any) {
       this.enableCapture = enable;
       this.stopCapture = stop;
@@ -31,13 +28,15 @@ if (typeof window !== "undefined") {
     });
 
     p5.prototype.registerMethod("pre", () => {
-      start().catch((err) =>
-        console.error("[webm-capture] Error in startCapture:", err)
-      );
+      start()
     });
 
     p5.prototype.registerMethod("post", () => {
-      capture().catch((err) =>
+      capture().then(() => {
+        if (capturer.verbose) {
+          console.log("[webm-capture] post-draw capture finished");
+        }
+      }).catch((err) =>
         console.error("[webm-capture] Error in captureFrame:", err)
       );
     });
