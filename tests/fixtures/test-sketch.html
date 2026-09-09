@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <script src="/fixtures/p5.min.js"></script>
+    <script src="/dist/p5.webm-capture.js"></script>
+    <style>
+      body { margin: 0; padding: 0; background: #000; }
+      canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <script>
+      // 5 distinct solid frames with discrete colored blocks to test frame sequencing.
+      // Frame 0: Red background, white block at x=10
+      // Frame 1: Green background, white block at x=30
+      // Frame 2: Blue background, white block at x=50
+      // Frame 3: Yellow background, white block at x=70
+      // Frame 4: Magenta background, white block at x=90
+      const COLORS = [
+        [255, 0, 0],     // Frame 0 - Red
+        [0, 255, 0],     // Frame 1 - Green
+        [0, 0, 255],     // Frame 2 - Blue
+        [255, 255, 0],   // Frame 3 - Yellow
+        [255, 0, 255],   // Frame 4 - Magenta
+      ];
+
+      let frame = 0;
+
+      function setup() {
+        createCanvas(100, 100);
+        pixelDensity(1);
+        noSmooth();
+
+        enableCapture({
+          frameCount: 5,
+          format: 'png',
+          verbose: false,
+          onComplete: (blob) => {
+            if (!blob) {
+              window.__captureError = "No blob returned from onComplete";
+              return;
+            }
+            blob.arrayBuffer().then((buffer) => {
+              window.__captureData = Array.from(new Uint8Array(buffer));
+            }).catch((err) => {
+              window.__captureError = String(err);
+            });
+          }
+        });
+      }
+
+      function draw() {
+        if (frame >= COLORS.length) return;
+        const [r, g, b] = COLORS[frame];
+        background(r, g, b);
+        fill(255);
+        noStroke();
+        rect(10 + frame * 20, 10, 10, 10);
+        frame++;
+      }
+    </script>
+  </body>
+</html>

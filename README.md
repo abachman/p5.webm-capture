@@ -8,14 +8,14 @@ combination of cc-capture and webm-writer, handy for capturing frames of sketche
 
 designed to work with p5.js and Chrome. I wrote this so I could include it on https://editor.p5js.org sketches via CDN.
 
-it is currently available at: https://unpkg.com/p5.webm-capture@1.2.0/dist/p5.webm-capture.js
+it is currently available at: https://unpkg.com/p5.webm-capture@1.3.1/dist/p5.webm-capture.js
 
 ```html
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
-    <script src="https://unpkg.com/p5.webm-capture@1.2.0/dist/p5.webm-capture.js"></script>
+    <script src="https://unpkg.com/p5.webm-capture@1.3.1/dist/p5.webm-capture.js"></script>
     <meta charset="utf-8" />
   </head>
   <body>
@@ -106,7 +106,9 @@ $ npm publish
 
 ## Changelog
 
-**2.0.0**: Upgrade to `ccapture.js` 2.0.0 with pure ESM, native TypeScript types, hardware-accelerated WebCodecs encoding, and remove legacy vendored dependencies. `onComplete(blob)` now reliably waits for file generation and download completion, receiving the resulting `Blob`.
+**1.3.1**: Fixed race condition between CCapture `start()` and `capture()` in which the first frame could be captured before the library was ready to encode it, resulting in duplicate first frames and dropped last frames. Added e2e test covering this behavior.
+
+**1.3.0**: Upgrade to `ccapture.js` 2.0.0 for more encodings out of the box and better cross-browser support.
 
 **1.2.1**: package version update.
 
