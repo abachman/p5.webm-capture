@@ -21,7 +21,6 @@ jobs:
           warn: |
             suspicious
             perf
-          plugins: typescript unicorn oxc
 
   test:
     name: Typecheck, Build, and E2E Tests
