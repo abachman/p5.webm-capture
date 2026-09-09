@@ -7,8 +7,8 @@
   </head>
   <body>
     <script>
-      const FRAMES = 30
-      const FRAME_RATE = 30
+      const FRAMES = 10
+      const FRAME_RATE = 2
       let c = 0;
 
       function setup() {
@@ -19,15 +19,26 @@
           frameCount: FRAMES,
           frameRate: FRAME_RATE,
           verbose: true,
-          display: true,
-          format: 'mp4',
+          // display: true,
+          format: 'png',
+          onComplete: () => {
+            noLoop()
+          }
         });
       }
 
       function draw() {
         background(c, 100, 100);
         c = (c + (360 / FRAMES)) % 360
-        captureFrame();
+
+        color(0);
+        textSize(48);
+        text(frameCount, 10, 60);
+
+        if (frameCount >= FRAMES) {
+          console.debug('[webm-capture:sketch] reached max frames')
+          noLoop();
+        }
       }
     </script>
   </body>
