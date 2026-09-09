@@ -7,6 +7,22 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: oxc-project/oxlint-action@b78c21302e4bc637e83927135c35a6684de1053e # v3.1.0
+        with:
+          config: .oxlintrc.json
+          deny: |
+            correctness
+            no-eval
+          warn: |
+            suspicious
+            perf
+          plugins: typescript unicorn oxc
+
   test:
     name: Typecheck, Build, and E2E Tests
     runs-on: ubuntu-latest
@@ -23,12 +39,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Format check
-        run: npm run fmt:check
 
       - name: Install Playwright Chromium and dependencies
         run: npx playwright install --with-deps chromium
